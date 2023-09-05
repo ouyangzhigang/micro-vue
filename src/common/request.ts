@@ -1,4 +1,5 @@
-import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios'
+import axios from 'axios'
+import type { AxiosInstance, CreateAxiosDefaults } from 'vue'
 
 type IRequestPostParams = Record<string, any>
 
@@ -10,7 +11,7 @@ class Request {
     this.init()
   }
 
-  init(defaultConfig) {
+  init(defaultConfig?) {
     if (defaultConfig) {
       this.config = defaultConfig
     }
@@ -20,6 +21,10 @@ class Request {
       baseURL: '/api',
       // 指定请求超时的毫秒数
       timeout: 25000,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
       // 表示跨域请求时是否需要使用凭证
       withCredentials: false,
       ...this.config
@@ -49,6 +54,7 @@ class Request {
          * 根据你的项目实际情况来对 response 和 error 做处理
          * 这里对 response 和 error 不做任何处理，直接返回
          */
+        this.handleSuccess(response)
         return response
       },
       (error) => {
@@ -56,7 +62,7 @@ class Request {
         if (response && response.data) {
           return Promise.reject(error)
         }
-        const { message } = error
+        let { message } = error
         console.error(message)
         switch (error.response.status) {
           case 302:
@@ -102,13 +108,37 @@ class Request {
             message = '异常问题，请联系管理员！'
             break
         }
+        this.handleError(message)
         return Promise.reject(message)
       }
     )
   }
 
+  private errorCallback = null
+  private successCallback = null
+
+  handleError(mesage) {
+    this?.errorCallback?.(mesage)
+  }
+
+  handleSuccess(response) {
+    this?.successCallback?.(response)
+  }
+
+  sethandleError(func) {
+    if (func) {
+      this.errorCallback = func
+    }
+  }
+
+  sethandleSuccess(func) {
+    if (func) {
+      this.successCallback = func
+    }
+  }
+
   public async send({ url, method, ...rest }) {
-    const res = await this.instance[method](url, ...rest)
+    const res = await this?.instance[method](url, ...rest)
 
     return res
   }
@@ -118,7 +148,7 @@ class Request {
    * @param {object} params
    */
   public async post(url: string, params?: IRequestPostParams, ...rest): Promise<any> {
-    const res = await this.instance?.post(url, params || null, { ...rest })
+    const res = await this?.instance?.post(url, params || null, { ...rest })
 
     return res
   }
@@ -136,7 +166,7 @@ class Request {
    * @param {object} params
    */
   public get(url, params = {}) {
-    return instance({
+    return this?.instance({
       method: 'get',
       url,
       params
@@ -149,7 +179,7 @@ class Request {
    * @param {object} params
    */
   public put(url, data = {}, params = {}) {
-    return instance({
+    return this?.instance({
       method: 'put',
       url,
       params,
@@ -162,7 +192,7 @@ class Request {
    * @param {object} params
    */
   public delete(url, params = {}) {
-    return instance({
+    return this?.instance({
       method: 'delete',
       url,
       params

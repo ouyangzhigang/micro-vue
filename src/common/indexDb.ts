@@ -19,7 +19,7 @@ class IndexDb extends Dexie {
       return this
     }
 
-    this.db = new Dexie<string>(databaseName, ...rest)
+    this.db = new Dexie(databaseName, ...rest)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.db
     //   this.request = window.indexedDB.open(databaseName, version)
