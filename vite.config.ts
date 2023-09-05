@@ -7,7 +7,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import qiankun from 'vite-plugin-qiankun'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import { TDesignResolver } from 'unplugin-vue-components/resolvers'
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import viteImagemin from 'vite-plugin-imagemin'
 import Icons from 'unplugin-icons/vite'
 import Commonjs from '@rollup/plugin-commonjs'
@@ -31,16 +31,15 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     AutoImport({
-      resolvers: [
-        TDesignResolver({
-          library: 'vue-next'
-        })
-      ]
+      imports: ['vue', 'vue-router'],
+      dts: 'src/auto-import.d.ts',
+      resolvers: [AntDesignVueResolver()]
     }),
     Components({
       resolvers: [
-        TDesignResolver({
-          library: 'vue-next'
+        AntDesignVueResolver({
+          importStyle: true,
+          resolveIcons: true
         })
       ]
     }),
@@ -51,7 +50,7 @@ export default defineConfig(({ mode }) => ({
       template: {
         compilerOptions: {
           // i am ignorning my custom '<container>' tag
-          isCustomElement: tag => ['container'].includes(tag)
+          isCustomElement: (tag) => ['container'].includes(tag)
         }
       }
     }),
