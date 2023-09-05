@@ -1,19 +1,19 @@
 import axios from 'axios'
-import type { AxiosInstance, CreateAxiosDefaults } from 'vue'
+import type { AxiosInstance, CreateAxiosDefaults } from 'axios'
 
 type IRequestPostParams = Record<string, any>
 
 class Request {
-  private instance: AxiosInstance | undefined
-  config: CreateAxiosDefaults | undefined
-  constructor(defaultConfig?: CreateAxiosDefaults) {
-    this.config = defaultConfig
+  private instance!: AxiosInstance
+  private config!: CreateAxiosDefaults = {}
+  constructor(defaultConfig?: CreateAxiosDefaults = {}) {
+    this.config = defaultConfig as CreateAxiosDefaults
     this.init()
   }
 
   init(defaultConfig?) {
     if (defaultConfig) {
-      this.config = defaultConfig
+      this.config = defaultConfig as CreateAxiosDefaults
     }
 
     // 创建请求实例
@@ -49,7 +49,7 @@ class Request {
 
     // 后置拦截器（获取到响应时的拦截）
     this.instance.interceptors.response.use(
-      (response): Promise<any> => {
+      (response) => {
         /**
          * 根据你的项目实际情况来对 response 和 error 做处理
          * 这里对 response 和 error 不做任何处理，直接返回
@@ -114,8 +114,8 @@ class Request {
     )
   }
 
-  private errorCallback = null
-  private successCallback = null
+  private errorCallback: Function | null = null
+  private successCallback: Function | null = null
 
   handleError(mesage) {
     this?.errorCallback?.(mesage)
@@ -138,7 +138,7 @@ class Request {
   }
 
   public async send({ url, method, ...rest }) {
-    const res = await this?.instance[method](url, ...rest)
+    const res = await this.instance[method](url, { ...rest })
 
     return res
   }
@@ -147,8 +147,8 @@ class Request {
    * @param {object} data
    * @param {object} params
    */
-  public async post(url: string, params?: IRequestPostParams, ...rest): Promise<any> {
-    const res = await this?.instance?.post(url, params || null, { ...rest })
+  public async post(url: string, params?: IRequestPostParams): Promise<any> {
+    const res = await this.instance.post(url, params || null)
 
     return res
   }
@@ -166,7 +166,7 @@ class Request {
    * @param {object} params
    */
   public get(url, params = {}) {
-    return this?.instance({
+    return this.instance({
       method: 'get',
       url,
       params
@@ -179,7 +179,7 @@ class Request {
    * @param {object} params
    */
   public put(url, data = {}, params = {}) {
-    return this?.instance({
+    return this.instance({
       method: 'put',
       url,
       params,
@@ -192,7 +192,7 @@ class Request {
    * @param {object} params
    */
   public delete(url, params = {}) {
-    return this?.instance({
+    return this.instance({
       method: 'delete',
       url,
       params

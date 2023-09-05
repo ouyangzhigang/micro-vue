@@ -1,4 +1,5 @@
 import Dexie from 'dexie'
+import type { DexieOptions } from 'dexie'
 interface Iparams {
   databaseName: string
   version?: string | number
@@ -12,14 +13,14 @@ class IndexDb extends Dexie {
   request: any
   db: any
   public constructor({ databaseName = location.origin, ...rest }: Iparams) {
-    super()
+    super(databaseName)
     // Check for support.
     if (!('indexedDB' in window)) {
       console.log("This browser doesn't support IndexedDB.")
       return this
     }
 
-    this.db = new Dexie(databaseName, ...rest)
+    this.db = new Dexie(databaseName, { ...rest } as DexieOptions)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.db
     //   this.request = window.indexedDB.open(databaseName, version)

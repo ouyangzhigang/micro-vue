@@ -13,4 +13,4 @@ app.use(router)
 
 app.mount('#app')
 
-console.log(import.meta.env.MODE)
+console.log(import.meta.env)
