@@ -88,10 +88,7 @@
       "prettier --write",
       "stylelint --fix"
     ],
-    "package.json": [
-      "prettier --write"
-    ],
-    "*.md": [
+    "*.{json,yaml,md}": [
       "prettier --write"
     ]
   }
